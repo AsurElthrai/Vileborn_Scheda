@@ -1,0 +1,44 @@
+{
+  "nome": "Elara",
+  "atto": "1",
+  "origine": "Nomade",
+  "retaggio": "Cercaselva",
+  "capacita": "Compagno di Ventura — Hai vantaggio in ogni prova per conquistare la fiducia di qualcuno.",
+  "personalita": ["curiosa", "adattabile", "istintiva"],
+  "addestramento": ["esplorare", "sopravvivenza", "erboristeria"],
+  "approcci": {
+    "Impeto":      "d8",
+    "Volontà":     "d8",
+    "Ascendente":  "d8",
+    "Ragione":     "d6",
+    "Precisione":  "d6",
+    "Sotterfugio": "d8"
+  },
+  "doni": [
+    {
+      "nome": "Radici Profonde",
+      "effetto": "Ti colleghi con la natura che ti circonda. Hai vantaggio alle prove di volontà e sei immune agli effetti dell'ansia per il resto della scena.",
+      "tuttavia": "Sei rallentata dalla tua connessione con la terra. Hai -1 alle prove di impeto fino alla fine della scena."
+    },
+    {
+      "nome": "Vento Ristoratore",
+      "effetto": "Purifichi un'area circoscritta, come una radura o un breve corso d'acqua, da tossine, effetti venefici e sostanze pericolose.",
+      "tuttavia": "Il tuo corpo rischia di assorbire parte della contaminazione. Tira 1d6: se 1, subisci una ferita."
+    }
+  ],
+  "moventi": {
+    "aspirazione": "Trovare un luogo nel mondo che senta davvero come casa",
+    "dovere": "Proteggere la foresta di Valmere dalla corruzione dell'Oscurità"
+  },
+  "legami": [
+    { "nome": "Dorvan",  "valore": 5, "npc": false },
+    { "nome": "Sera",    "valore": 4, "npc": false },
+    { "nome": "Aldric",  "valore": 4, "npc": false },
+    { "nome": "Maren",   "valore": 6, "npc": true  }
+  ],
+  "equipaggiamento": [
+    { "nome": "Arco corto", "desc": "Legno di tasso antico", "tipo": "custom" },
+    { "nome": "Kit da erborista", "desc": "Erbe e tinture rare", "tipo": "custom" },
+    { "nome": "Lama rituale", "desc": "Ferrofreddo", "tipo": "fer" }
+  ]
+}
