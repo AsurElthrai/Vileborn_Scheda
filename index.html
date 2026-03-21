@@ -165,6 +165,9 @@
             <div class="char-sub" id="disp-sub">—</div>
         </div>
         <div class="topbar-btns">
+            <input type="range" id="width-slider" class="width-slider"
+                   min="25" max="100" step="5" value="100"
+                   oninput="applyBodyWidth(this.value)" title="Larghezza pannello">
             <div class="grid-ctrl">
                 <button class="icon-btn" onclick="changeGridCols(-1)" title="Meno colonne">−</button>
                 <span id="cols-lbl">3</span>

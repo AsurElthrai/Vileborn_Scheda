@@ -141,6 +141,24 @@ document.addEventListener('click', e => {
 });
 
 // ─────────────────────────────────────────────
+//  LARGHEZZA PANNELLO
+// ─────────────────────────────────────────────
+
+function initBodyWidth() {
+  const saved = parseInt(localStorage.getItem('vileborn_width'));
+  const val = (saved && saved >= 25 && saved <= 100) ? saved : 100;
+  const slider = g('width-slider');
+  if (slider) slider.value = val;
+  applyBodyWidth(val);
+}
+
+function applyBodyWidth(val) {
+  document.documentElement.style.setProperty('--body-width', val + '%');
+  localStorage.setItem('vileborn_width', val);
+  if (typeof resizeSectionGrid === 'function') requestAnimationFrame(resizeSectionGrid);
+}
+
+// ─────────────────────────────────────────────
 //  COLONNE GRIGLIA
 // ─────────────────────────────────────────────
 
@@ -250,6 +268,7 @@ function importJSON(e) {
 // ─────────────────────────────────────────────
 
 initTheme();
+initBodyWidth();
 initGridCols();
 initScale();
 
