@@ -160,7 +160,7 @@ function changeScale(delta) {
 
 function applyScale() {
   const body = g('session-body');
-  if (body) body.style.zoom = uiScale;
+  if (body) body.style.zoom = String(uiScale);
   const lbl = g('scale-lbl');
   if (lbl) lbl.textContent = Math.round(uiScale * 100) + '%';
   if (typeof resizeSectionGrid === 'function') requestAnimationFrame(resizeSectionGrid);

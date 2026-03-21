@@ -23,6 +23,8 @@ const signs = [false, false, false];
 //  BUILD SESSIONE
 // ─────────────────────────────────────────────
 
+let _masonryObserver = null;
+
 function buildSession() {
   if (!PC) return;
   wounds = 0;
@@ -35,13 +37,23 @@ function buildSession() {
   initDrag();
   showSession();
   requestAnimationFrame(resizeSectionGrid);
+
+  // ResizeObserver: ricalcola il masonry ogni volta che un blocco cambia altezza
+  if (_masonryObserver) _masonryObserver.disconnect();
+  _masonryObserver = new ResizeObserver(() => requestAnimationFrame(resizeSectionGrid));
+  document.querySelectorAll('.sec').forEach(sec => _masonryObserver.observe(sec));
 }
 
 function resizeSectionGrid() {
   const cont = g('sections');
   if (!cont || getComputedStyle(cont).display !== 'grid') return;
+  const secs = [...cont.querySelectorAll('.sec')];
+  // Reset spans so il browser ricalcola l'altezza naturale
+  secs.forEach(sec => { sec.style.gridRowEnd = 'auto'; });
+  // Reflow forzato — necessario prima di misurare
+  void cont.offsetHeight;
   const zoom = parseFloat(g('session-body')?.style.zoom) || 1;
-  cont.querySelectorAll('.sec').forEach(sec => {
+  secs.forEach(sec => {
     const h = sec.getBoundingClientRect().height / zoom;
     sec.style.gridRowEnd = `span ${Math.ceil((h + 8) / 10)}`;
   });
