@@ -718,7 +718,23 @@ body {
 .menu-sep { height: 0.5px; background: var(--border); margin: 4px 0; }
 
 /* ── Body sessione ── */
-.session-body { padding: 10px 14px 40px; }
+.session-body {
+  max-width: var(--body-width, 100%);
+  margin: 0 auto;
+  padding: 10px 14px 40px;
+}
+
+.width-slider {
+  width: 72px; height: 3px;
+  accent-color: var(--gold);
+  cursor: pointer; opacity: .6;
+  transition: opacity .15s;
+}
+.width-slider:hover { opacity: 1; }
+
+@media (max-width: 600px) {
+  .width-slider { display: none; }
+}
 
 /* ── Bottoni azione ── */
 .actions { display: flex; gap: 6px; margin-bottom: 10px; }
