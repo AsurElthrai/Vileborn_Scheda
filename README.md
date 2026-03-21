@@ -4,6 +4,8 @@ Web app per la gestione della scheda di sessione del gioco di ruolo **Vileborn**
 
 Funziona direttamente nel browser — nessuna installazione necessaria.
 
+publish branch per la pubblicazione
+
 ---
 
 ## Struttura del progetto
