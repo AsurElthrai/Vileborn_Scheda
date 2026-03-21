@@ -19,6 +19,13 @@
 let wounds = 0;
 const signs = [false, false, false];
 
+/**
+ * Blocchi persistenti condizionali applicati via popup dado1+blocca.
+ * Formato: '${donIndex}:${target}'  es. '2:moventi'
+ * Attivi solo finché il dono corrispondente è segnato.
+ */
+const _conditionalBlock = new Set();
+
 // ─────────────────────────────────────────────
 //  BUILD SESSIONE
 // ─────────────────────────────────────────────
@@ -409,6 +416,16 @@ function getDoniEffettiAttivi() {
     });
   });
 
+  // Blocchi condizionali da popup dado1+blocca (es. Specchio Arcano)
+  _conditionalBlock.forEach(entry => {
+    const sep    = entry.lastIndexOf(':');
+    const idxStr = entry.substring(0, sep);
+    const target = entry.substring(sep + 1);
+    if (g('dc-' + idxStr)?.classList.contains('on')) {
+      block.add(target);
+    }
+  });
+
   return { mods, svn, block };
 }
 
@@ -492,9 +509,31 @@ function toggleChip(id) { g(id)?.classList.toggle('on'); }
 
 /**
  * Segna/libera un dono e aggiorna la scheda con i suoi effetti persistenti.
+ * Se il dono viene segnato e ha un popup tuttavia, lo mostra.
+ * Se il dono viene liberato, rimuove eventuali blocchi condizionali.
  */
 function toggleDon(i) {
-  g('dc-' + i)?.classList.toggle('on');
+  const el = g('dc-' + i);
+  if (!el) return;
+  el.classList.toggle('on');
+  const isOn = el.classList.contains('on');
+
+  if (isOn && PC.doni?.[i]) {
+    // Cerca dati popup: prima sull'oggetto dono, poi in RETAGGI (retrocompatibile)
+    const dono = PC.doni[i];
+    let popup = dono.popup;
+    if (!popup && PC.retaggio && RETAGGI[PC.retaggio]) {
+      const fonte = RETAGGI[PC.retaggio].doni.find(d => d.nome === dono.nome);
+      popup = fonte?.popup;
+    }
+    if (popup) showDonPopup(dono.nome, dono.tuttavia || '', popup, i);
+  } else if (!isOn) {
+    // Libera blocchi condizionali di questo dono (es. Specchio Arcano con dado1)
+    [..._conditionalBlock].forEach(entry => {
+      if (entry.startsWith(i + ':')) _conditionalBlock.delete(entry);
+    });
+  }
+
   updateAll();
 }
 
@@ -515,6 +554,94 @@ function useL(id) {
 }
 
 // ─────────────────────────────────────────────
+//  POPUP TUTTAVIA DONO
+// ─────────────────────────────────────────────
+
+/** Dati del popup attivo: { tipo, effetto, donIndex } */
+let _popupEffect = null;
+
+/**
+ * Mostra il popup per il tuttavia di un dono appena segnato.
+ * @param {string}  nome     - Nome del dono
+ * @param {string}  tuttavia - Testo del tuttavia
+ * @param {object}  popup    - { tipo: 'dado1'|'automatico', effetto: string|null }
+ * @param {number}  donIndex - Indice nel PC.doni
+ */
+function showDonPopup(nome, tuttavia, popup, donIndex) {
+  _popupEffect = { ...popup, donIndex };
+  g('pop-nome').textContent    = nome;
+  g('pop-tuttavia').textContent = tuttavia;
+
+  const isAuto = popup.tipo === 'automatico';
+  if (isAuto) {
+    g('pop-question').textContent  = 'Questo effetto si applica automaticamente.';
+    g('pop-btn-si').textContent    = popup.effetto ? 'Applica' : 'OK';
+    g('pop-btn-no').style.display  = 'none';
+  } else {
+    g('pop-question').textContent  = 'Hai ottenuto 1 sul d6?';
+    g('pop-btn-si').textContent    = popup.effetto ? 'Sì, applica' : 'Sì';
+    g('pop-btn-no').style.display  = '';
+  }
+
+  g('don-popup').style.display = 'flex';
+}
+
+function closeDonPopupOutside(e) {
+  if (e.target === g('don-popup')) closeDonPopup();
+}
+
+function closeDonPopup() {
+  g('don-popup').style.display = 'none';
+  _popupEffect = null;
+}
+
+/**
+ * L'utente conferma: applica l'effetto sulla scheda.
+ * Ferite e condizioni sono PERMANENTI — non vengono rimossi
+ * automaticamente quando il dono viene liberato.
+ * L'unica eccezione sono i blocchi condizionali (blocca:X) che
+ * durano finché il dono rimane segnato.
+ */
+function applyDonEffect() {
+  if (_popupEffect?.effetto) {
+    applyEffettoScheda(_popupEffect.effetto, _popupEffect.donIndex);
+  }
+  closeDonPopup();
+}
+
+function skipDonEffect() {
+  closeDonPopup();
+}
+
+/**
+ * Applica un effetto negativo alla scheda.
+ * @param {string} effetto   - 'ferita' | id condizione | 'blocca:X'
+ * @param {number} donIndex  - Indice del dono nel PC.doni
+ */
+function applyEffettoScheda(effetto, donIndex) {
+  if (effetto === 'ferita') {
+    // Aggiunge una ferita; rimane anche dopo che il dono viene liberato
+    const next = Math.min(wounds + 1, 4);
+    if (next > wounds) toggleWound(next);
+
+  } else if (effetto.startsWith('blocca:')) {
+    // Blocco persistente condizionale: attivo solo finché il dono è segnato
+    const target = effetto.slice(7); // 'blocca:moventi' → 'moventi'
+    _conditionalBlock.add(donIndex + ':' + target);
+    updateAll();
+
+  } else {
+    // Condizione (ansia, esau, verg, paura, conf, rabbia)
+    // Rimane attiva anche dopo che il dono viene liberato
+    const el = g('c-' + effetto);
+    if (el && !el.classList.contains('on')) {
+      el.classList.add('on');
+      updateAll();
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
 //  AZIONI SPECIALI
 // ─────────────────────────────────────────────
 
@@ -523,6 +650,7 @@ function clearSigns() {
   for (let i = 1; i <= 3; i++) g('sg' + i)?.classList.remove('on');
   if (g('slbl')) g('slbl').textContent = SIGN_LABELS[0];
   PC.doni?.forEach((_, i) => g('dc-' + i)?.classList.remove('on'));
+  _conditionalBlock.clear(); // rimuove blocchi condizionali (es. Specchio Arcano)
   updateAll(); // rimuove gli effetti persistenti dei doni liberati
 }
 

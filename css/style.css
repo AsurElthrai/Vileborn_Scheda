@@ -1073,3 +1073,101 @@ body {
   .approcci-grid,
   .choice-grid      { grid-template-columns: 1fr; }
 }
+
+
+/* ═══════════════════════════════════════════
+   POPUP TUTTAVIA DONO
+═══════════════════════════════════════════ */
+
+.pop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px 16px;
+}
+
+.pop-box {
+  background: var(--parchment2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg);
+  padding: 20px 22px 18px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.40);
+  animation: popIn .15s ease-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(.94); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.pop-hdr {
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.pop-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.pop-tuttavia {
+  font-size: 13px;
+  color: var(--blood);
+  background: var(--blood-light);
+  border: 1px solid var(--blood-mid);
+  border-radius: var(--r);
+  padding: 9px 11px;
+  margin-bottom: 12px;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+.pop-question {
+  font-size: 14px;
+  color: var(--ink2);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.pop-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pop-btn-si {
+  background: var(--blood);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  padding: 8px 18px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.pop-btn-si:hover { opacity: 0.85; }
+
+.pop-btn-no {
+  background: var(--parchment3);
+  color: var(--ink2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 8px 14px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.pop-btn-no:hover { background: var(--parchment); }

@@ -213,6 +213,23 @@
 
 </div><!-- /session-screen -->
 
+<!-- ═══════════════════════════════════════════════
+     POPUP TUTTAVIA DONO
+════════════════════════════════════════════════ -->
+<div id="don-popup" class="pop-overlay" onclick="closeDonPopupOutside(event)" style="display:none">
+  <div class="pop-box">
+    <div class="pop-hdr">
+      <span class="pop-nome" id="pop-nome"></span>
+    </div>
+    <div class="pop-tuttavia" id="pop-tuttavia"></div>
+    <div class="pop-question" id="pop-question"></div>
+    <div class="pop-btns">
+      <button class="pop-btn-si" id="pop-btn-si" onclick="applyDonEffect()"></button>
+      <button class="pop-btn-no" id="pop-btn-no" onclick="skipDonEffect()">No, ignora</button>
+    </div>
+  </div>
+</div>
+
 <!-- Script caricati in ordine di dipendenza -->
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
