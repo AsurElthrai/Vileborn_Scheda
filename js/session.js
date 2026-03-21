@@ -40,8 +40,10 @@ function buildSession() {
 function resizeSectionGrid() {
   const cont = g('sections');
   if (!cont || getComputedStyle(cont).display !== 'grid') return;
+  const zoom = parseFloat(g('session-body')?.style.zoom) || 1;
   cont.querySelectorAll('.sec').forEach(sec => {
-    sec.style.gridRowEnd = `span ${Math.ceil((sec.getBoundingClientRect().height + 8) / 10)}`;
+    const h = sec.getBoundingClientRect().height / zoom;
+    sec.style.gridRowEnd = `span ${Math.ceil((h + 8) / 10)}`;
   });
 }
 

@@ -141,6 +141,32 @@ document.addEventListener('click', e => {
 });
 
 // ─────────────────────────────────────────────
+//  SCALA UI
+// ─────────────────────────────────────────────
+
+let uiScale = 1.0;
+
+function initScale() {
+  const saved = parseFloat(localStorage.getItem('vileborn_scale'));
+  if (saved && saved >= 0.5 && saved <= 1.0) uiScale = saved;
+  applyScale();
+}
+
+function changeScale(delta) {
+  uiScale = Math.min(1.0, Math.max(0.5, Math.round((uiScale + delta) * 20) / 20));
+  applyScale();
+  localStorage.setItem('vileborn_scale', uiScale);
+}
+
+function applyScale() {
+  const body = g('session-body');
+  if (body) body.style.zoom = uiScale;
+  const lbl = g('scale-lbl');
+  if (lbl) lbl.textContent = Math.round(uiScale * 100) + '%';
+  if (typeof resizeSectionGrid === 'function') requestAnimationFrame(resizeSectionGrid);
+}
+
+// ─────────────────────────────────────────────
 //  MODALITÀ COMPATTA
 // ─────────────────────────────────────────────
 
@@ -199,6 +225,7 @@ function importJSON(e) {
 // ─────────────────────────────────────────────
 
 initTheme();
+initScale();
 
 // Se esiste un personaggio salvato, proponi di caricarlo
 if (loadFromStorage() && PC) {
