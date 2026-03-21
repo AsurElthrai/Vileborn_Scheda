@@ -153,7 +153,8 @@ function initBodyWidth() {
 }
 
 function applyBodyWidth(val) {
-  document.documentElement.style.setProperty('--body-width', val + '%');
+  const body = g('session-body');
+  if (body) body.style.maxWidth = val + '%';
   localStorage.setItem('vileborn_width', val);
   if (typeof resizeSectionGrid === 'function') requestAnimationFrame(resizeSectionGrid);
 }
