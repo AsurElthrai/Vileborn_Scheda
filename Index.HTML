@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Vileborn — Scheda di Sessione</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SCHERMATA SETUP
+════════════════════════════════════════════════ -->
+<div id="setup-screen">
+
+    <div class="theme-btn-corner">
+        <button class="icon-btn" id="theme-btn-setup" onclick="toggleTheme()" title="Cambia tema">&#9788;</button>
+    </div>
+
+    <div class="setup-card">
+        <div class="setup-logo">Vileborn</div>
+        <h1 class="setup-title">Scheda di Sessione</h1>
+
+        <div class="setup-tabs">
+            <button class="setup-tab active" onclick="switchSetupTab('manual')" id="tab-manual">Nuovo personaggio</button>
+            <button class="setup-tab" onclick="switchSetupTab('json')" id="tab-json">Carica JSON</button>
+        </div>
+
+        <!-- ── TAB JSON ── -->
+        <div id="panel-json" style="display:none">
+            <div class="json-drop" id="json-drop">
+                <input type="file" accept=".json" id="json-file-input" onchange="handleFileLoad(event)">
+                <div class="json-drop-icon">&#9112;</div>
+                <p>Trascina qui il tuo file JSON<br>oppure tocca per selezionarlo</p>
+                <p class="json-hint">Qualsiasi file esportato da questa app</p>
+            </div>
+            <div id="json-preview" style="display:none; margin-top:14px">
+                <div class="json-preview-box" id="json-preview-text"></div>
+                <button class="btn-primary" onclick="loadFromJson()" style="margin-top:10px">Carica personaggio</button>
+            </div>
+            <div class="setup-divider"><span>oppure incolla il JSON</span></div>
+            <div class="field-group">
+        <textarea class="field-input" id="json-paste" rows="5"
+                  placeholder='{"nome":"Jerom","origine":"Borghese",...}'
+                  style="resize:vertical; font-family:monospace; font-size:12px"></textarea>
+            </div>
+            <button class="btn-primary" onclick="loadFromPaste()">Carica dal testo</button>
+        </div>
+
+        <!-- ── TAB MANUALE ── -->
+        <div id="panel-manual">
+
+            <!-- Nome + Atto -->
+            <div class="field-row">
+                <div class="field-group">
+                    <label class="field-label">Nome personaggio</label>
+                    <input class="field-input" type="text" id="s-nome" placeholder="Es. Jerom">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Atto</label>
+                    <select class="select-input" id="s-atto">
+                        <option value="1">Atto 1</option>
+                        <option value="2" selected>Atto 2</option>
+                        <option value="3">Atto 3</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Origine -->
+            <div class="field-group">
+                <label class="field-label">Origine</label>
+                <div class="choice-grid" id="origine-grid"></div>
+            </div>
+
+            <!-- Capacità origine (dipendente da origine) -->
+            <div class="field-group" id="capacita-section" style="display:none">
+                <label class="field-label">Capacità origine <span class="label-hint">— scegli 1</span></label>
+                <div class="choice-list" id="capacita-list"></div>
+            </div>
+
+            <!-- Retaggio Oscuro -->
+            <div class="field-group">
+                <label class="field-label">Retaggio Oscuro</label>
+                <div class="choice-grid" id="retaggio-grid"></div>
+            </div>
+
+            <!-- Approcci (auto-aggiornati da origine + retaggio) -->
+            <div class="field-group">
+                <label class="field-label">
+                    Approcci
+                    <span class="label-hint">— aggiornati automaticamente da origine e retaggio</span>
+                </label>
+                <div class="approcci-grid" id="approcci-grid"></div>
+            </div>
+
+            <!-- Personalità (suggerimenti dipendenti) -->
+            <div class="field-group">
+                <label class="field-label">Personalità <span class="label-hint">— tocca un suggerimento o digita</span></label>
+                <div class="suggestion-chips" id="pers-suggestions"></div>
+                <div class="tag-input-wrap" id="pers-tags" onclick="focusTagInput('pers')" style="margin-top:6px"></div>
+            </div>
+
+            <!-- Addestramento (suggerimenti dipendenti) -->
+            <div class="field-group">
+                <label class="field-label">Addestramento <span class="label-hint">— tocca un suggerimento o digita</span></label>
+                <div class="suggestion-chips" id="add-suggestions"></div>
+                <div class="tag-input-wrap" id="add-tags" onclick="focusTagInput('add')" style="margin-top:6px"></div>
+            </div>
+
+            <!-- Doni retaggio (dipendenti da retaggio) -->
+            <div class="field-group" id="doni-section" style="display:none">
+                <label class="field-label">Doni del retaggio <span class="label-hint">— seleziona quelli sbloccati</span></label>
+                <div id="doni-choice-list"></div>
+            </div>
+
+            <!-- Doni aggiuntivi manuali -->
+            <div class="field-group">
+                <label class="field-label">Doni aggiuntivi</label>
+                <div id="doni-list"></div>
+                <button class="add-row-btn" onclick="addDoneRow()">+ aggiungi dono manuale</button>
+            </div>
+
+            <!-- Moventi -->
+            <div class="field-group">
+                <label class="field-label">Moventi</label>
+                <input class="field-input" type="text" id="s-aspirazione"
+                       placeholder="Aspirazione..." style="margin-bottom:6px">
+                <input class="field-input" type="text" id="s-dovere" placeholder="Dovere...">
+            </div>
+
+            <!-- Legami -->
+            <div class="field-group">
+                <label class="field-label">Legami</label>
+                <div id="legami-list"></div>
+                <button class="add-row-btn" onclick="addLegameRow()">+ aggiungi legame</button>
+            </div>
+
+            <!-- Equipaggiamento -->
+            <div class="field-group">
+                <label class="field-label">Equipaggiamento speciale</label>
+                <div id="eq-list"></div>
+                <button class="add-row-btn" onclick="addEqRow()">+ aggiungi oggetto</button>
+            </div>
+
+            <button class="btn-primary" onclick="createCharacter()">Inizia la sessione</button>
+
+        </div><!-- /panel-manual -->
+    </div><!-- /setup-card -->
+</div><!-- /setup-screen -->
+
+
+<!-- ═══════════════════════════════════════════════
+     SCHEDA DI SESSIONE
+════════════════════════════════════════════════ -->
+<div id="session-screen" style="display:none">
+
+    <div class="topbar">
+        <div class="char-info">
+            <div class="char-name" id="disp-nome">—</div>
+            <div class="char-sub" id="disp-sub">—</div>
+        </div>
+        <div class="topbar-btns">
+            <button class="view-toggle" id="view-toggle-btn" onclick="toggleCompact()">Compatta</button>
+            <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Cambia tema">&#9788;</button>
+            <button class="icon-btn" onclick="toggleMenu()" id="menu-btn" title="Menu">&#8942;</button>
+        </div>
+    </div>
+
+    <!-- Menu contestuale -->
+    <div class="actions-menu" id="actions-menu">
+        <div class="menu-item" onclick="exportJSON()">&#8681; Esporta JSON</div>
+        <div class="menu-item" onclick="triggerImport()">&#8679; Importa JSON</div>
+        <input type="file" accept=".json" id="import-input" style="display:none" onchange="importJSON(event)">
+        <div class="menu-sep"></div>
+        <div class="menu-item" onclick="goSetup()">&#9998; Modifica personaggio</div>
+        <div class="menu-sep"></div>
+        <div class="menu-item menu-danger" onclick="cediPulsione()">&#9632; Cedi alla pulsione</div>
+        <div class="menu-item menu-success" onclick="usaSanctus()">&#10022; Sanctus</div>
+        <div class="menu-item" onclick="resetAll()">&#8635; Reset sessione</div>
+    </div>
+
+    <div class="session-body" id="session-body">
+        <div id="fbar" class="fbar"></div>
+
+        <div class="actions">
+            <button class="abtn puls" onclick="cediPulsione()">Cedi alla pulsione</button>
+            <button class="abtn sanc" onclick="usaSanctus()">Sanctus</button>
+            <button class="abtn rst" onclick="resetAll()">Reset</button>
+        </div>
+
+        <div class="sections" id="sections">
+            <!-- Generato dinamicamente da session.js -->
+        </div>
+    </div>
+
+</div><!-- /session-screen -->
+
+<!-- Script caricati in ordine di dipendenza -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/setup.js"></script>
+<script src="js/session.js"></script>
+
+</body>
+</html>
