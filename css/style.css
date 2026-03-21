@@ -771,14 +771,18 @@ body {
   .col-ctrl { display: none; }
 }
 
-.col-ctrl { display: flex; gap: 1px; flex-shrink: 0; }
+.col-ctrl {
+  display: flex; gap: 1px; flex-shrink: 0;
+  opacity: 0; transition: opacity .15s;
+}
+.sec-hdr:hover .col-ctrl { opacity: 1; }
 .col-btn {
   background: none; border: none; cursor: pointer;
   font-size: 8px; color: var(--ink3);
   padding: 2px 3px; border-radius: 3px;
-  opacity: .3; line-height: 1; font-family: monospace;
+  opacity: .4; line-height: 1; font-family: monospace;
 }
-.col-btn:hover { opacity: .7; }
+.col-btn:hover { opacity: .8; }
 .col-btn.active { opacity: 1; color: var(--gold); }
 
 /* ── Sezioni ── */
