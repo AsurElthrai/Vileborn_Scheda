@@ -136,6 +136,27 @@ body {
   line-height: 1.2;
 }
 
+/* ── Personaggio di esempio ── */
+.example-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+.example-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.example-link:hover { opacity: .75; }
+
 /* ── Tabs ── */
 .setup-tabs {
   display: flex;
@@ -719,12 +740,37 @@ body {
 @keyframes fl { 0%{opacity:1} 50%{opacity:.1} 100%{opacity:1} }
 .flash { animation: fl .5s ease; }
 
+/* ── Griglia sezioni ── */
+#sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+.sec[data-cols="1"] { grid-column: span 1; }
+.sec[data-cols="2"] { grid-column: span 2; }
+.sec[data-cols="3"] { grid-column: span 3; }
+
+.col-ctrl { display: flex; gap: 1px; flex-shrink: 0; }
+.col-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 8px; color: var(--ink3);
+  padding: 2px 3px; border-radius: 3px;
+  opacity: .3; line-height: 1; font-family: monospace;
+}
+.col-btn:hover { opacity: .7; }
+.col-btn.active { opacity: 1; color: var(--gold); }
+
+@media (max-width: 600px) {
+  #sections { display: block; }
+  .col-ctrl { display: none; }
+}
+
 /* ── Sezioni ── */
 .sec {
   background: var(--parchment2);
   border: 0.5px solid var(--border);
   border-radius: var(--r-lg);
-  margin-bottom: 8px;
   overflow: hidden;
   transition: border-color .2s, background .2s;
 }

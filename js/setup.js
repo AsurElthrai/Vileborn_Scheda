@@ -471,6 +471,17 @@ function createCharacter() {
 }
 
 // ─────────────────────────────────────────────
+//  PERSONAGGIO DI ESEMPIO
+// ─────────────────────────────────────────────
+
+function loadExample() {
+  fetch('data/Elara.json')
+    .then(r => r.json())
+    .then(data => { PC = data; saveToStorage(); buildSession(); })
+    .catch(() => alert('Impossibile caricare il personaggio di esempio.'));
+}
+
+// ─────────────────────────────────────────────
 //  CARICA JSON (tab JSON)
 // ─────────────────────────────────────────────
 

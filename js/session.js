@@ -39,17 +39,53 @@ function buildSession() {
 function buildSections() {
   const cont = g('sections');
   cont.innerHTML = '';
-  [
-    buildStato(),
-    buildCondizioni(),
-    buildApprocci(),
-    buildPersonalita(),
-    buildAddestramento(),
-    buildDoni(),
-    buildMoventi(),
-    buildLegami(),
-    buildEquipaggiamento()
-  ].forEach(sec => { if (sec) cont.appendChild(sec); });
+
+  const built = {
+    stato: buildStato(),
+    cond:  buildCondizioni(),
+    app:   buildApprocci(),
+    pers:  buildPersonalita(),
+    add:   buildAddestramento(),
+    doni:  buildDoni(),
+    mov:   buildMoventi(),
+    leg:   buildLegami(),
+    eq:    buildEquipaggiamento()
+  };
+
+  const defaultOrder = ['stato','cond','app','pers','add','doni','mov','leg','eq'];
+  const savedOrder   = PC.layout?.order || [];
+  const order = [
+    ...savedOrder.filter(id => defaultOrder.includes(id)),
+    ...defaultOrder.filter(id => !savedOrder.includes(id))
+  ];
+  const cols = PC.layout?.cols || {};
+
+  order.forEach(id => {
+    const sec = built[id];
+    if (!sec) return;
+    const c = cols[id] || 3;
+    sec.dataset.cols = c;
+    cont.appendChild(sec);
+    updateColButtons(id, c);
+  });
+}
+
+function setSectionCols(id, n) {
+  const sec = g('sec-' + id);
+  if (!sec) return;
+  sec.dataset.cols = n;
+  updateColButtons(id, n);
+  if (!PC.layout) PC.layout = {};
+  if (!PC.layout.cols) PC.layout.cols = {};
+  PC.layout.cols[id] = n;
+  saveToStorage();
+}
+
+function updateColButtons(id, n) {
+  [1, 2, 3].forEach(i => {
+    const btn = g('cb' + i + '-' + id);
+    if (btn) btn.classList.toggle('active', i === n);
+  });
 }
 
 // ─────────────────────────────────────────────
@@ -58,15 +94,21 @@ function buildSections() {
 
 function makeSection(id, title, bodyHtml) {
   const sec = document.createElement('div');
-  sec.className  = 'sec';
-  sec.id         = 'sec-' + id;
-  sec.draggable  = true;
+  sec.className    = 'sec';
+  sec.id           = 'sec-' + id;
+  sec.draggable    = true;
+  sec.dataset.cols = 3;
   sec.innerHTML  = `
     <div class="sec-hdr" onclick="toggleSec('${id}')">
       <div class="drag-handle" onclick="event.stopPropagation()">
         <span></span><span></span><span></span>
       </div>
       <span class="sec-title">${title}</span>
+      <div class="col-ctrl" onclick="event.stopPropagation()">
+        <button id="cb1-${id}" class="col-btn" onclick="setSectionCols('${id}',1)" title="1 colonna">1</button>
+        <button id="cb2-${id}" class="col-btn" onclick="setSectionCols('${id}',2)" title="2 colonne">2</button>
+        <button id="cb3-${id}" class="col-btn" onclick="setSectionCols('${id}',3)" title="3 colonne">3</button>
+      </div>
       <span class="sec-arr open" id="arr-${id}">▾</span>
     </div>
     <div class="sec-body" id="body-${id}">${bodyHtml}</div>`;
@@ -450,6 +492,10 @@ function initDrag() {
       dragEl = null;
       sec.classList.remove('dragging');
       cont.querySelectorAll('.sec').forEach(s => s.classList.remove('drag-over'));
+      const order = [...cont.querySelectorAll('.sec')].map(s => s.id.replace('sec-', ''));
+      if (!PC.layout) PC.layout = {};
+      PC.layout.order = order;
+      saveToStorage();
     });
     sec.addEventListener('dragover', e => {
       e.preventDefault();
