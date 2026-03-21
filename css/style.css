@@ -741,11 +741,12 @@ body {
 @keyframes fl { 0%{opacity:1} 50%{opacity:.1} 100%{opacity:1} }
 .flash { animation: fl .5s ease; }
 
-/* ── Griglia sezioni ── */
+/* ── Griglia sezioni (masonry) ── */
 #sections {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-auto-rows: 10px;
+  column-gap: 8px;
   align-items: start;
 }
 .sec[data-cols="1"] { grid-column: span 1; }
@@ -771,11 +772,7 @@ body {
   .col-ctrl { display: none; }
 }
 
-.col-ctrl {
-  display: flex; gap: 1px; flex-shrink: 0;
-  opacity: 0; transition: opacity .15s;
-}
-.sec-hdr:hover .col-ctrl { opacity: 1; }
+.col-ctrl { display: flex; gap: 1px; flex-shrink: 0; }
 .col-btn {
   background: none; border: none; cursor: pointer;
   font-size: 8px; color: var(--ink3);

@@ -34,7 +34,18 @@ function buildSession() {
   buildSections();
   initDrag();
   showSession();
+  requestAnimationFrame(resizeSectionGrid);
 }
+
+function resizeSectionGrid() {
+  const cont = g('sections');
+  if (!cont || getComputedStyle(cont).display !== 'grid') return;
+  cont.querySelectorAll('.sec').forEach(sec => {
+    sec.style.gridRowEnd = `span ${Math.ceil((sec.getBoundingClientRect().height + 8) / 10)}`;
+  });
+}
+
+window.addEventListener('resize', () => requestAnimationFrame(resizeSectionGrid));
 
 function buildSections() {
   const cont = g('sections');
@@ -79,6 +90,7 @@ function setSectionCols(id, n) {
   if (!PC.layout.cols) PC.layout.cols = {};
   PC.layout.cols[id] = n;
   saveToStorage();
+  requestAnimationFrame(resizeSectionGrid);
 }
 
 function updateColButtons(id, n) {
@@ -121,6 +133,7 @@ function toggleSec(id) {
   s.classList.toggle('collapsed');
   const arr = g('arr-' + id);
   if (arr) arr.classList.toggle('open', !s.classList.contains('collapsed'));
+  requestAnimationFrame(resizeSectionGrid);
 }
 
 // ─────────────────────────────────────────────
