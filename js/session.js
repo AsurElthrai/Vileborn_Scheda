@@ -82,9 +82,10 @@ function setSectionCols(id, n) {
 }
 
 function updateColButtons(id, n) {
+  const num = Number(n);
   [1, 2, 3].forEach(i => {
     const btn = g('cb' + i + '-' + id);
-    if (btn) btn.classList.toggle('active', i === n);
+    if (btn) btn.classList.toggle('active', i === num);
   });
 }
 

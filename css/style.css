@@ -703,7 +703,7 @@ body {
 .menu-sep { height: 0.5px; background: var(--border); margin: 4px 0; }
 
 /* ── Body sessione ── */
-.session-body { max-width: 480px; margin: 0 auto; padding: 10px 12px 40px; }
+.session-body { padding: 10px 14px 40px; }
 
 /* ── Bottoni azione ── */
 .actions { display: flex; gap: 6px; margin-bottom: 10px; }
@@ -752,6 +752,25 @@ body {
 .sec[data-cols="2"] { grid-column: span 2; }
 .sec[data-cols="3"] { grid-column: span 3; }
 
+/* XL: 4 colonne */
+@media (min-width: 1400px) {
+  #sections { grid-template-columns: repeat(4, 1fr); }
+  .sec[data-cols="3"] { grid-column: span 4; }
+}
+
+/* Medium: 2 colonne */
+@media (max-width: 900px) and (min-width: 601px) {
+  #sections { grid-template-columns: repeat(2, 1fr); }
+  .sec[data-cols="2"],
+  .sec[data-cols="3"] { grid-column: span 2; }
+}
+
+/* Small: una colonna */
+@media (max-width: 600px) {
+  #sections { display: block; }
+  .col-ctrl { display: none; }
+}
+
 .col-ctrl { display: flex; gap: 1px; flex-shrink: 0; }
 .col-btn {
   background: none; border: none; cursor: pointer;
@@ -761,11 +780,6 @@ body {
 }
 .col-btn:hover { opacity: .7; }
 .col-btn.active { opacity: 1; color: var(--gold); }
-
-@media (max-width: 600px) {
-  #sections { display: block; }
-  .col-ctrl { display: none; }
-}
 
 /* ── Sezioni ── */
 .sec {
