@@ -141,6 +141,31 @@ document.addEventListener('click', e => {
 });
 
 // ─────────────────────────────────────────────
+//  COLONNE GRIGLIA
+// ─────────────────────────────────────────────
+
+let gridCols = 3;
+
+function initGridCols() {
+  const saved = parseInt(localStorage.getItem('vileborn_cols'));
+  if (saved && saved >= 1 && saved <= 6) gridCols = saved;
+  applyGridCols();
+}
+
+function changeGridCols(delta) {
+  gridCols = Math.min(6, Math.max(1, gridCols + delta));
+  applyGridCols();
+  localStorage.setItem('vileborn_cols', gridCols);
+}
+
+function applyGridCols() {
+  document.documentElement.style.setProperty('--ncols', String(gridCols));
+  const lbl = g('cols-lbl');
+  if (lbl) lbl.textContent = gridCols;
+  if (typeof resizeSectionGrid === 'function') requestAnimationFrame(resizeSectionGrid);
+}
+
+// ─────────────────────────────────────────────
 //  SCALA UI
 // ─────────────────────────────────────────────
 
@@ -225,6 +250,7 @@ function importJSON(e) {
 // ─────────────────────────────────────────────
 
 initTheme();
+initGridCols();
 initScale();
 
 // Se esiste un personaggio salvato, proponi di caricarlo

@@ -134,7 +134,7 @@ function makeSection(id, title, bodyHtml) {
       <div class="col-ctrl" onclick="event.stopPropagation()">
         <button id="cb1-${id}" class="col-btn" onclick="setSectionCols('${id}',1)" title="1 colonna">1</button>
         <button id="cb2-${id}" class="col-btn" onclick="setSectionCols('${id}',2)" title="2 colonne">2</button>
-        <button id="cb3-${id}" class="col-btn" onclick="setSectionCols('${id}',3)" title="3 colonne">3</button>
+        <button id="cb3-${id}" class="col-btn col-btn-3" onclick="setSectionCols('${id}',3)" title="Larghezza piena">3</button>
       </div>
       <span class="sec-arr open" id="arr-${id}">▾</span>
     </div>

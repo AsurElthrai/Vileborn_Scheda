@@ -642,6 +642,13 @@ body {
 .char-sub  { font-size: 12px; color: var(--ink3); margin-top: 1px; font-style: italic; }
 .topbar-btns { display: flex; gap: 6px; align-items: center; }
 
+.grid-ctrl { display: flex; align-items: center; gap: 1px; }
+#cols-lbl {
+  font-size: 10px; color: var(--ink3);
+  min-width: 16px; text-align: center;
+  font-family: 'Cinzel', serif; letter-spacing: .04em;
+  pointer-events: none;
+}
 .zoom-ctrl { display: flex; align-items: center; gap: 1px; }
 #scale-lbl {
   font-size: 10px; color: var(--ink3);
@@ -752,33 +759,20 @@ body {
 /* ── Griglia sezioni (masonry) ── */
 #sections {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(var(--ncols, 3), 1fr);
   grid-auto-rows: 10px;
   column-gap: 8px;
   align-items: start;
 }
 .sec[data-cols="1"] { grid-column: span 1; }
 .sec[data-cols="2"] { grid-column: span 2; }
-.sec[data-cols="3"] { grid-column: span 3; }
+.sec[data-cols="3"] { grid-column: 1 / -1; }
 
-/* XL: 4 colonne */
-@media (min-width: 1400px) {
-  #sections { grid-template-columns: repeat(4, 1fr); }
-  .sec[data-cols="3"] { grid-column: span 4; }
-}
-
-/* Medium: 2 colonne */
-@media (max-width: 900px) and (min-width: 601px) {
-  #sections { grid-template-columns: repeat(2, 1fr); }
-  .sec[data-cols="2"],
-  .sec[data-cols="3"] { grid-column: span 2; }
-}
-
-/* Small: 2 colonne */
+/* Small: 2 colonne fisse, senza controllo colonne */
 @media (max-width: 600px) {
   #sections { grid-template-columns: repeat(2, 1fr); }
-  .sec[data-cols="2"],
-  .sec[data-cols="3"] { grid-column: span 2; }
+  .col-btn-3 { display: none; }
+  .grid-ctrl { display: none; }
 }
 
 .col-ctrl { display: flex; gap: 1px; flex-shrink: 0; }
