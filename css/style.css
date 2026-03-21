@@ -139,8 +139,9 @@ body {
 /* ── Personaggio di esempio ── */
 .example-hint {
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink3);
+  font-family: 'Crimson Pro', serif;
   margin-top: -12px;
   margin-bottom: 20px;
 }
@@ -149,8 +150,8 @@ body {
   border: none;
   padding: 0;
   color: var(--gold);
-  font-size: 12px;
-  font-family: inherit;
+  font-size: 13px;
+  font-family: 'Crimson Pro', serif;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;

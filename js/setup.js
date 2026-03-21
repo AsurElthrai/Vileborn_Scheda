@@ -454,6 +454,7 @@ function createCharacter() {
     nome: d.nome, effetto: d.effetto, tuttavia: d.tuttavia
   }));
 
+  const savedLayout = PC?.layout;
   PC = {
     nome, atto, origine, retaggio,
     capacita:      capacitaStr,
@@ -465,6 +466,7 @@ function createCharacter() {
     legami:        legamiRows.map(l => ({ nome: l.nome, valore: l.valore, npc: l.npc })),
     equipaggiamento: eqRows.map(e => ({ nome: e.nome, desc: e.desc, tipo: e.tipo }))
   };
+  if (savedLayout) PC.layout = savedLayout;
 
   saveToStorage();
   buildSession();
@@ -475,7 +477,7 @@ function createCharacter() {
 // ─────────────────────────────────────────────
 
 function loadExample() {
-  fetch('data/Elara.json')
+  fetch('data/elara.json')
     .then(r => r.json())
     .then(data => { PC = data; saveToStorage(); buildSession(); })
     .catch(() => alert('Impossibile caricare il personaggio di esempio.'));
