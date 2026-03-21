@@ -226,6 +226,7 @@ function buildApprocci() {
           <span class="dbadge ${isHigh ? 'hi' : ''}" id="db-${key}">${die}</span>
           ${extra}
           <span class="mod" id="md-${key}">-1</span>
+          <span class="svn" id="sv-${key}" title="Svantaggio (dono segnato)">SVN</span>
         </div>
       </div>`;
   }).join('');
@@ -267,7 +268,7 @@ function buildDoni() {
     <div class="don">
       <div class="don-hdr" onclick="toggleDonBody(${i})">
         <div class="don-chk" id="dc-${i}"
-          onclick="event.stopPropagation(); g('dc-${i}').classList.toggle('on')"></div>
+          onclick="event.stopPropagation(); toggleDon(${i})"></div>
         <span class="don-dname">${d.nome}</span>
         <span class="don-arr" id="da-${i}">▾</span>
       </div>
@@ -378,6 +379,39 @@ function toggleCond(id) {
   updateAll();
 }
 
+/**
+ * Raccoglie gli effetti persistenti di tutti i doni attualmente segnati.
+ * Cerca i dati `persistenti` in RETAGGI (fonte di verità) confrontando per nome,
+ * così funziona anche con personaggi caricati da JSON che non hanno il campo.
+ */
+function getDoniEffettiAttivi() {
+  const mods  = {};          // { chiave: totale_mod }
+  const svn   = new Set();   // chiavi con svantaggio
+  const block = new Set();   // 'legami' | 'moventi'
+
+  if (!PC.doni) return { mods, svn, block };
+
+  PC.doni.forEach((dono, i) => {
+    if (!g('dc-' + i)?.classList.contains('on')) return;
+
+    // Lookup in RETAGGI per nome (retrocompatibile con vecchi JSON)
+    let persistenti = dono.persistenti;
+    if (!persistenti && PC.retaggio && RETAGGI[PC.retaggio]) {
+      const fonte = RETAGGI[PC.retaggio].doni.find(d => d.nome === dono.nome);
+      persistenti = fonte?.persistenti;
+    }
+    if (!persistenti) return;
+
+    persistenti.forEach(eff => {
+      if (eff.tipo === 'mod')       mods[eff.chiave] = (mods[eff.chiave] || 0) + eff.val;
+      if (eff.tipo === 'svantaggio') svn.add(eff.chiave);
+      if (eff.tipo === 'blocca')    block.add(eff.obiettivo);
+    });
+  });
+
+  return { mods, svn, block };
+}
+
 function updateAll() {
   const ansia  = g('c-ansia')?.classList.contains('on');
   const esau   = g('c-esau')?.classList.contains('on');
@@ -386,21 +420,38 @@ function updateAll() {
   const conf   = g('c-conf')?.classList.contains('on');
   const rabbia = g('c-rabbia')?.classList.contains('on');
 
-  // Ansia → penalizza ragione, precisione, sotterfugio
-  ANSIA_KEYS.forEach(k => {
-    g('al-' + k)?.classList.toggle('pen', ansia);
-    g('db-' + k)?.classList.toggle('pen', ansia);
-    g('md-' + k)?.classList.toggle('on',  ansia);
+  // Effetti persistenti dai doni segnati
+  const { mods: doniMods, svn: doniSvn, block: doniBlock } = getDoniEffettiAttivi();
+
+  // ── Approcci ──────────────────────────────────────────
+  APPROCCI_NAMES.forEach(name => {
+    const key = name.toLowerCase().replace('à', 'a');
+
+    // Calcola modificatore totale: condizioni + doni
+    let mod = 0;
+    if (ansia && ANSIA_KEYS.includes(key)) mod -= 1;
+    if (esau  && ESAU_KEYS.includes(key))  mod -= 1;
+    mod += (doniMods[key] || 0);
+
+    const isSvn = doniSvn.has(key);
+    const isPen = mod < 0 || isSvn;
+
+    g('al-' + key)?.classList.toggle('pen', isPen);
+    g('db-' + key)?.classList.toggle('pen', isPen);
+
+    // Mostra il modificatore numerico (es. -1, -2…)
+    const mdEl = g('md-' + key);
+    if (mdEl) {
+      mdEl.classList.toggle('on', mod < 0);
+      if (mod < 0) mdEl.textContent = String(mod);
+    }
+
+    // Mostra indicatore svantaggio
+    const svEl = g('sv-' + key);
+    if (svEl) svEl.classList.toggle('on', isSvn);
   });
 
-  // Esaurimento → penalizza impeto, volontà, ascendente
-  ESAU_KEYS.forEach(k => {
-    g('al-' + k)?.classList.toggle('pen', esau);
-    g('db-' + k)?.classList.toggle('pen', esau);
-    g('md-' + k)?.classList.toggle('on',  esau);
-  });
-
-  // Vergogna → sezione personalità rossa + barra chip
+  // ── Vergogna → personalità ────────────────────────────
   g('sec-pers')?.classList.toggle('dimmed', verg);
   PC.personalita?.forEach((_, i) => {
     const el = g('p-' + i);
@@ -409,7 +460,7 @@ function updateAll() {
     else el.classList.remove('str');
   });
 
-  // Paura → sezione addestramento rossa + barra chip
+  // ── Paura → addestramento ────────────────────────────
   g('sec-add')?.classList.toggle('dimmed', paura);
   PC.addestramento?.forEach((_, i) => {
     const el = g('a-' + i);
@@ -418,16 +469,18 @@ function updateAll() {
     else el.classList.remove('str');
   });
 
-  // Confusione → sezione moventi rossa + blocca checkbox
-  g('sec-mov')?.classList.toggle('dimmed', conf);
-  ['mn-asp', 'mn-dov'].forEach(id => g(id)?.classList.toggle('str', conf));
-  ['m-asp',  'm-dov' ].forEach(id => g(id)?.classList.toggle('blocked', conf));
+  // ── Confusione o dono → blocca moventi ───────────────
+  const blockMoventi = conf || doniBlock.has('moventi');
+  g('sec-mov')?.classList.toggle('dimmed', blockMoventi);
+  ['mn-asp', 'mn-dov'].forEach(id => g(id)?.classList.toggle('str',     blockMoventi));
+  ['m-asp',  'm-dov' ].forEach(id => g(id)?.classList.toggle('blocked', blockMoventi));
 
-  // Rabbia → sezione legami rossa + blocca checkbox
-  g('sec-leg')?.classList.toggle('dimmed', rabbia);
+  // ── Rabbia o dono → blocca legami ────────────────────
+  const blockLegami = rabbia || doniBlock.has('legami');
+  g('sec-leg')?.classList.toggle('dimmed', blockLegami);
   PC.legami?.forEach((_, i) => {
-    g('l-' + i)?.classList.toggle('blocked', rabbia);
-    g('ln-' + i)?.classList.toggle('str', rabbia);
+    g('l-'  + i)?.classList.toggle('blocked', blockLegami);
+    g('ln-' + i)?.classList.toggle('str',     blockLegami);
   });
 }
 
@@ -436,6 +489,14 @@ function updateAll() {
 // ─────────────────────────────────────────────
 
 function toggleChip(id) { g(id)?.classList.toggle('on'); }
+
+/**
+ * Segna/libera un dono e aggiorna la scheda con i suoi effetti persistenti.
+ */
+function toggleDon(i) {
+  g('dc-' + i)?.classList.toggle('on');
+  updateAll();
+}
 
 function toggleDonBody(i) {
   const b = g('db-' + i);
@@ -462,6 +523,7 @@ function clearSigns() {
   for (let i = 1; i <= 3; i++) g('sg' + i)?.classList.remove('on');
   if (g('slbl')) g('slbl').textContent = SIGN_LABELS[0];
   PC.doni?.forEach((_, i) => g('dc-' + i)?.classList.remove('on'));
+  updateAll(); // rimuove gli effetti persistenti dei doni liberati
 }
 
 function cediPulsione() {
