@@ -117,7 +117,7 @@ Tipi equipaggiamento: `custom`, `arg` (argentacciaio), `fer` (ferrofreddo), `osc
 1. Crea un repository su GitHub
 2. Carica tutti i file mantenendo la struttura delle cartelle
 3. Vai su **Settings → Pages → Source: Deploy from branch → main / root**
-4. Aspetta ~1 minuto e la pagina sarà disponibile su `https://tuonome.github.io/nome-repo`
+4. Aspetta ~1 minuto e la pagina sarà disponibile su `[https://asurelthrai.github.io/Vileborn_Scheda/]`
 
 ---
 
