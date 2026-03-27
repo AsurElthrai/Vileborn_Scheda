@@ -910,8 +910,11 @@ body {
          border: 1px solid var(--shadow-mid); border-radius: 3px; padding: 0 4px;
          display: none; cursor: default; }
 .svn.on { display: inline; }
-.itag { font-size: 10px; color: var(--gold); font-style: italic; }
-.cap-line { font-size: 11px; color: var(--gold); font-style: italic; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border); }
+/* ── Capacità origine ── */
+.cap-block { padding: 2px 0; }
+.cap-nome  { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: .04em; margin-bottom: 5px; }
+.cap-desc  { font-size: 13px; color: var(--ink2); font-style: italic; line-height: 1.45; }
+.cap-neg   { font-size: 12px; color: var(--blood); font-style: italic; margin-top: 7px; padding: 3px 8px; border-left: 2px solid var(--blood-mid); background: var(--blood-light); border-radius: 0 var(--r) var(--r) 0; line-height: 1.4; }
 
 /* ── Condizioni ── */
 .cond {

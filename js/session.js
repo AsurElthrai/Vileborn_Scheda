@@ -79,6 +79,7 @@ function buildSections() {
     stato: buildStato(),
     cond:  buildCondizioni(),
     app:   buildApprocci(),
+    cap:   buildCapacita(),
     pers:  buildPersonalita(),
     add:   buildAddestramento(),
     doni:  buildDoni(),
@@ -87,7 +88,7 @@ function buildSections() {
     eq:    buildEquipaggiamento()
   };
 
-  const defaultOrder = ['stato','cond','app','pers','add','doni','mov','leg','eq'];
+  const defaultOrder = ['stato','cond','app','cap','pers','add','doni','mov','leg','eq'];
   const savedOrder   = PC.layout?.order || [];
   const order = [
     ...savedOrder.filter(id => defaultOrder.includes(id)),
@@ -227,26 +228,39 @@ function buildApprocci() {
     const key    = name.toLowerCase().replace('à', 'a');
     const die    = PC.approcci[name] || 'd6';
     const isHigh = HIGH.includes(die);
-    const extra  = (PC.capacita && ORIGINI[PC.origine]?.boost?.includes(name))
-      ? `<span class="itag" title="${PC.capacita}">★</span>` : '';
     return `
       <div class="app-row">
         <span class="app-lbl" id="al-${key}">${name}</span>
         <div class="app-right">
           <span class="dbadge ${isHigh ? 'hi' : ''}" id="db-${key}">${die}</span>
-          ${extra}
           <span class="mod" id="md-${key}">-1</span>
           <span class="svn" id="sv-${key}" title="Svantaggio (dono segnato)">SVN</span>
         </div>
       </div>`;
   }).join('');
 
-  const capNome = PC.capacita ? PC.capacita.split(' — ')[0] : '';
-  const capLine = capNome
-    ? `<div class="cap-line" title="${PC.capacita}">★ ${capNome}</div>`
-    : '';
+  return makeSection('app', 'Approcci', rows);
+}
 
-  return makeSection('app', 'Approcci', rows + capLine);
+// ─────────────────────────────────────────────
+//  SEZIONE CAPACITÀ ORIGINE
+// ─────────────────────────────────────────────
+
+function buildCapacita() {
+  if (!PC.capacita) return null;
+  const sep     = PC.capacita.indexOf(' — ');
+  const nome    = sep > -1 ? PC.capacita.slice(0, sep) : PC.capacita;
+  const resto   = sep > -1 ? PC.capacita.slice(sep + 3) : '';
+  const negMatch = resto.match(/^([\s\S]*?)(\s*\(([^)]+)\))?$/);
+  const descTxt  = negMatch ? negMatch[1].trim() : resto;
+  const negTxt   = negMatch?.[3] || '';
+  const html = `
+    <div class="cap-block">
+      <div class="cap-nome">${nome}</div>
+      ${descTxt ? `<div class="cap-desc">${descTxt}</div>` : ''}
+      ${negTxt  ? `<div class="cap-neg">${negTxt}</div>`  : ''}
+    </div>`;
+  return makeSection('cap', 'Capacità Origine', html);
 }
 
 // ─────────────────────────────────────────────
