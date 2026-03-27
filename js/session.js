@@ -55,6 +55,7 @@ function resizeSectionGrid() {
   const cont = g('sections');
   if (!cont || getComputedStyle(cont).display !== 'grid') return;
   const secs = [...cont.querySelectorAll('.sec')];
+  const sy = window.scrollY;
   // Reset spans so il browser ricalcola l'altezza naturale
   secs.forEach(sec => { sec.style.gridRowEnd = 'auto'; });
   // Reflow forzato — necessario prima di misurare
@@ -64,6 +65,8 @@ function resizeSectionGrid() {
     const h = sec.getBoundingClientRect().height / zoom;
     sec.style.gridRowEnd = `span ${Math.ceil((h + 8) / 10)}`;
   });
+  // Ripristina posizione scroll (il reflow può far saltare la pagina su mobile)
+  if (window.scrollY !== sy) window.scrollTo({ top: sy, behavior: 'instant' });
 }
 
 window.addEventListener('resize', () => requestAnimationFrame(resizeSectionGrid));
@@ -224,7 +227,7 @@ function buildApprocci() {
     const key    = name.toLowerCase().replace('à', 'a');
     const die    = PC.approcci[name] || 'd6';
     const isHigh = HIGH.includes(die);
-    const extra  = (PC.capacita && name === 'Ragione')
+    const extra  = (PC.capacita && ORIGINI[PC.origine]?.boost?.includes(name))
       ? `<span class="itag" title="${PC.capacita}">★</span>` : '';
     return `
       <div class="app-row">
@@ -238,7 +241,12 @@ function buildApprocci() {
       </div>`;
   }).join('');
 
-  return makeSection('app', 'Approcci', rows);
+  const capNome = PC.capacita ? PC.capacita.split(' — ')[0] : '';
+  const capLine = capNome
+    ? `<div class="cap-line" title="${PC.capacita}">★ ${capNome}</div>`
+    : '';
+
+  return makeSection('app', 'Approcci', rows + capLine);
 }
 
 // ─────────────────────────────────────────────

@@ -911,6 +911,7 @@ body {
          display: none; cursor: default; }
 .svn.on { display: inline; }
 .itag { font-size: 10px; color: var(--gold); font-style: italic; }
+.cap-line { font-size: 11px; color: var(--gold); font-style: italic; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border); }
 
 /* ── Condizioni ── */
 .cond {
